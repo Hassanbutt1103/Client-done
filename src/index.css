@@ -1,0 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;700&family=Orbitron:wght@400;700&family=Titillium+Web:wght@400;700&family=Exo+2:wght@400;700&display=swap');
+@import "tailwindcss";
+
+body {
+  font-family: 'Inter', sans-serif;
+}
