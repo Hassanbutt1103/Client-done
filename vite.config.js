@@ -41,5 +41,11 @@ export default defineConfig({
         drop_debugger: true
       }
     }
+  },
+  resolve: {
+    alias: {
+      'react': 'react',
+      'react-dom': 'react-dom'
+    }
   }
 })
