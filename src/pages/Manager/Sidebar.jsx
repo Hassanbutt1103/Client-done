@@ -160,43 +160,43 @@ const Sidebar = ({ collapsed, setCollapsed, mobileSidebarOpen, setMobileSidebarO
 
   // Sidebar content for mobile overlay
   const mobileSidebar = (
-    <div className="fixed top-0 left-0 z-50 w-64 h-screen bg-[#1a2a33] shadow-2xl transform transition-transform duration-300" style={{ transform: mobileSidebarOpen ? 'translateX(0)' : 'translateX(-100%)' }}>
+    <div className="fixed top-0 left-0 z-50 w-80 max-w-[85vw] h-screen bg-[#1a2a33] shadow-2xl transform transition-transform duration-300 flex flex-col" style={{ transform: mobileSidebarOpen ? 'translateX(0)' : 'translateX(-100%)' }}>
       <button
-        className="absolute top-2 right-2 w-10 h-10 flex items-center justify-center text-white text-3xl z-50 bg-black/30 rounded-full focus:outline-none focus:ring-2 focus:ring-white"
+        className="absolute top-3 right-3 w-12 h-12 flex items-center justify-center text-white text-2xl z-50 bg-black/50 hover:bg-black/70 rounded-full focus:outline-none focus:ring-2 focus:ring-white transition-colors"
         onClick={() => setMobileSidebarOpen(false)}
         aria-label="Close sidebar"
         tabIndex={0}
       >
         &times;
       </button>
-      <div className="min-h-screen h-full w-full flex flex-col items-start">
-        <div className="flex items-center border-b border-white/10 p-6 pb-2 gap-3 w-full min-w-0">
+      <div className="flex flex-col h-full w-full">
+        <div className="flex items-center border-b border-white/10 p-4 sm:p-6 pb-2 gap-2 sm:gap-3 w-full min-w-0">
           <img 
             src={novaLogo} 
             alt="Nova Logo" 
-            className="w-20 h-10 object-contain" 
+            className="w-16 h-8 sm:w-20 sm:h-10 object-contain flex-shrink-0" 
           />
-          <span className="font-extrabold text-base sm:text-xl text-white tracking-wide drop-shadow-lg transition-all duration-300 truncate flex-1 min-w-0">
+          <span className="font-extrabold text-sm sm:text-base md:text-xl text-white tracking-wide drop-shadow-lg transition-all duration-300 truncate flex-1 min-w-0">
             DASH VP ENGENHARIA
           </span>
         </div>
-        <nav className="flex-1 mt-4 space-y-1 w-full">
+        <nav className="flex-1 mt-4 space-y-2 w-full px-2 overflow-y-auto">
           {managerNavLinks.map(link => (
             <NavLink
               key={link.name}
               to={link.path}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-5 py-3 mx-2 rounded-xl transition-colors hover:bg-white/10 focus:bg-white/10' ${isActive ? 'bg-gradient-to-r from-[#D6A647]/20 to-[#D6A647]/40 border border-[#D6A647]/30' : ''}`
+                `flex items-center gap-3 px-4 py-4 mx-1 rounded-xl transition-colors hover:bg-white/10 focus:bg-white/10 active:bg-white/20 ${isActive ? 'bg-gradient-to-r from-[#D6A647]/20 to-[#D6A647]/40 border border-[#D6A647]/30' : ''}`
               }
               onClick={() => setMobileSidebarOpen(false)}
             >
               {link.icon}
-              <span className="font-medium tracking-wide text-white block text-left">{link.name}</span>
+              <span className="font-medium tracking-wide text-white block text-left text-sm sm:text-base">{link.name}</span>
             </NavLink>
           ))}
           
           {/* Management Section */}
-          <div className="mx-4 my-4">
+          <div className="mx-3 my-4">
             <hr className="border-white/20" />
             <p className="text-xs text-white/60 mt-2 px-2">Management</p>
           </div>
@@ -206,17 +206,17 @@ const Sidebar = ({ collapsed, setCollapsed, mobileSidebarOpen, setMobileSidebarO
               key={link.name}
               to={link.path}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-5 py-3 mx-2 rounded-xl transition-colors hover:bg-white/10 focus:bg-white/10' ${isActive ? 'bg-gradient-to-r from-[#D6A647]/20 to-[#D6A647]/40 border border-[#D6A647]/30' : ''}`
+                `flex items-center gap-3 px-4 py-4 mx-1 rounded-xl transition-colors hover:bg-white/10 focus:bg-white/10 active:bg-white/20 ${isActive ? 'bg-gradient-to-r from-[#D6A647]/20 to-[#D6A647]/40 border border-[#D6A647]/30' : ''}`
               }
               onClick={() => setMobileSidebarOpen(false)}
             >
               {link.icon}
-              <span className="font-medium tracking-wide text-white block text-left">{link.name}</span>
+              <span className="font-medium tracking-wide text-white block text-left text-sm sm:text-base">{link.name}</span>
             </NavLink>
           ))}
           
           {/* Coming Soon Section */}
-          <div className="mx-4 my-4">
+          <div className="mx-3 my-4">
             <hr className="border-white/20" />
             <p className="text-xs text-white/60 mt-2 px-2">Others - Coming Soon</p>
           </div>
@@ -224,37 +224,37 @@ const Sidebar = ({ collapsed, setCollapsed, mobileSidebarOpen, setMobileSidebarO
           {futureManagerLinks.map(link => (
             <div
               key={link.name}
-              className="flex items-center gap-3 px-5 py-3 mx-2 rounded-xl transition-colors cursor-not-allowed"
+              className="flex items-center gap-3 px-4 py-4 mx-1 rounded-xl transition-colors cursor-not-allowed"
             >
               {link.icon}
-              <span className="font-medium tracking-wide text-white/50 block text-left">{link.name}</span>
+              <span className="font-medium tracking-wide text-white/50 block text-left text-sm sm:text-base">{link.name}</span>
             </div>
           ))}
         </nav>
         
         {/* User Profile Section - Mobile */}
-        <div className="mt-auto px-2 w-full">
-          <div className="bg-white/10 rounded-xl p-3 mb-3">
+        <div className="flex-shrink-0 px-3 w-full bg-[#1a2a33] border-t border-white/10">
+          <div className="bg-white/10 rounded-xl p-4 mb-3 mt-2">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-xs">{userName.charAt(0).toUpperCase()}</span>
+              <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-white font-bold text-sm">{userName.charAt(0).toUpperCase()}</span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-white font-medium text-xs truncate">{userName}</p>
+                <p className="text-white font-medium text-sm truncate">{userName}</p>
                 <p className="text-white/60 text-xs">{userRole}</p>
               </div>
             </div>
           </div>
-        </div>
-        
-        <div className="mb-4 px-2 w-full">
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-5 py-3 bg-[#1a2a33] hover:bg-[#2a3a43] transition-colors rounded-xl shadow-lg border border-white/20"
-          >
-            <FaSignOutAlt className="text-white" />
-            <span className="text-white block text-left">Logout</span>
-          </button>
+          
+          <div className="mb-4 w-full">
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 px-4 py-4 bg-[#1a2a33] hover:bg-[#2a3a43] active:bg-[#2a3a43] transition-colors rounded-xl shadow-lg border border-white/20"
+            >
+              <FaSignOutAlt className="text-white text-lg" />
+              <span className="text-white block text-left text-sm sm:text-base">Logout</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

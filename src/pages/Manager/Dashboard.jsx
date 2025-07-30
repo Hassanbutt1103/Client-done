@@ -10,7 +10,7 @@ const Dashboard = () => {
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} mobileSidebarOpen={mobileSidebarOpen} setMobileSidebarOpen={setMobileSidebarOpen} />
       {/* Hamburger for mobile */}
       <button
-        className="fixed top-4 left-4 z-30 p-2 rounded-md bg-[#1a2a33] text-white shadow-lg sm:hidden"
+        className="fixed top-4 left-4 z-30 p-3 rounded-lg bg-[#1a2a33] text-white shadow-lg sm:hidden hover:bg-[#2a3a43] active:bg-[#2a3a43] transition-colors border border-white/10"
         onClick={() => setMobileSidebarOpen(true)}
         aria-label="Open sidebar"
       >
