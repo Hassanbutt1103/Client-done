@@ -4,6 +4,19 @@ import { handleAuthError, getAuthHeaders } from '../../utils/auth';
 import { API_ENDPOINTS } from '../../config/api';
 
 const UserManagement = () => {
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
+  
   const [users, setUsers] = useState([]);
   const [pendingUsers, setPendingUsers] = useState([]);
   const [activeTab, setActiveTab] = useState('users'); // 'users' or 'pending'
@@ -328,23 +341,23 @@ const UserManagement = () => {
                   <p className="text-gray-300">Manage all system users and their permissions</p>
                 </div>
               </div>
-              <div className="flex gap-2">
+              <div className={`flex ${isMobile ? 'flex-col gap-2' : 'gap-2'}`}>
                 <button 
-                  className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                  className={`flex items-center gap-2 bg-green-600 text-white ${isMobile ? 'px-3 py-2 text-sm' : 'px-4 py-2'} rounded-lg hover:bg-green-700 transition-colors`}
                   onClick={handleRefresh}
                   title="Refresh user list"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                   </svg>
-                  <span>Refresh</span>
+                  <span>{isMobile ? 'Refresh' : 'Refresh'}</span>
                 </button>
                 <button 
-                  className="flex items-center gap-2 bg-gradient-to-r from-[#D6A647] to-[#b45309] text-white px-4 py-2 rounded-lg hover:from-[#b45309] hover:to-[#92400e] transition-colors"
+                  className={`flex items-center gap-2 bg-gradient-to-r from-[#D6A647] to-[#b45309] text-white ${isMobile ? 'px-3 py-2 text-sm' : 'px-4 py-2'} rounded-lg hover:from-[#b45309] hover:to-[#92400e] transition-colors`}
                   onClick={() => alert('Add user functionality coming soon!')}
                 >
                   <FaUserPlus />
-                  <span>Add User</span>
+                  <span>{isMobile ? 'Add User' : 'Add User'}</span>
                 </button>
               </div>
             </div>
@@ -354,9 +367,9 @@ const UserManagement = () => {
         {/* Tabs */}
         <div className="mb-6">
           <div className="bg-[#232b3a] rounded-xl shadow-lg border border-white/10">
-            <div className="flex">
+            <div className={`${isMobile ? 'flex-col' : 'flex'}`}>
               <button
-                className={`flex-1 px-6 py-4 text-center font-medium transition-colors rounded-l-xl ${
+                className={`flex-1 ${isMobile ? 'px-4 py-3' : 'px-6 py-4'} text-center font-medium transition-colors ${isMobile ? 'rounded-t-xl' : 'rounded-l-xl'} ${
                   activeTab === 'users'
                     ? 'bg-gradient-to-r from-[#D6A647] to-[#b45309] text-white'
                     : 'text-gray-300 hover:text-white hover:bg-[#2a3441]'
@@ -365,11 +378,11 @@ const UserManagement = () => {
               >
                 <div className="flex items-center justify-center gap-2">
                   <FaUsers />
-                  <span>Active Users ({users.length})</span>
+                  <span className={isMobile ? 'text-sm' : ''}>Active Users ({users.length})</span>
                 </div>
               </button>
               <button
-                className={`flex-1 px-6 py-4 text-center font-medium transition-colors rounded-r-xl ${
+                className={`flex-1 ${isMobile ? 'px-4 py-3' : 'px-6 py-4'} text-center font-medium transition-colors ${isMobile ? 'rounded-b-xl' : 'rounded-r-xl'} ${
                   activeTab === 'pending'
                     ? 'bg-orange-600 text-white'
                     : 'text-gray-300 hover:text-white hover:bg-[#2a3441]'
@@ -378,10 +391,10 @@ const UserManagement = () => {
               >
                 <div className="flex items-center justify-center gap-2">
                   <FaUserCheck />
-                  <span>
-                    Pending Requests ({pendingUsers.length})
+                  <span className={isMobile ? 'text-sm' : ''}>
+                    {isMobile ? 'Pending' : 'Pending Requests'} ({pendingUsers.length})
                     {pendingUsers.filter(user => user.role === 'admin').length > 0 && (
-                      <span className="ml-2 px-2 py-1 bg-red-600 text-white text-xs rounded-full animate-pulse">
+                      <span className={`ml-2 px-2 py-1 bg-red-600 text-white ${isMobile ? 'text-xs' : 'text-xs'} rounded-full animate-pulse`}>
                         {pendingUsers.filter(user => user.role === 'admin').length} ADMIN
                       </span>
                     )}
@@ -525,24 +538,24 @@ const UserManagement = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                       {formatDate(user.createdAt)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center">
-                      <div className="flex items-center justify-center gap-2">
+                    <td className={`${isMobile ? 'px-3 py-2' : 'px-6 py-4'} whitespace-nowrap text-center`}>
+                      <div className={`flex items-center justify-center ${isMobile ? 'gap-1' : 'gap-2'}`}>
                         <button 
-                          className="p-2 text-[#D6A647] hover:bg-[#D6A647]/10 rounded-lg transition-colors"
+                          className={`${isMobile ? 'p-1' : 'p-2'} text-[#D6A647] hover:bg-[#D6A647]/10 rounded-lg transition-colors`}
                           title="View Details"
                           onClick={() => alert(`View details for ${user.name}`)}
                         >
-                          <FaEye />
+                          <FaEye className={isMobile ? 'text-sm' : ''} />
                         </button>
                         <button 
-                          className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                          className={`${isMobile ? 'p-1' : 'p-2'} text-green-600 hover:bg-green-50 rounded-lg transition-colors`}
                           title="Edit User"
                           onClick={() => alert(`Edit ${user.name}`)}
                         >
-                          <FaEdit />
+                          <FaEdit className={isMobile ? 'text-sm' : ''} />
                         </button>
                         <button 
-                          className={`p-2 rounded-lg transition-colors ${
+                          className={`${isMobile ? 'p-1' : 'p-2'} rounded-lg transition-colors ${
                             user.isActive 
                               ? 'text-red-600 hover:bg-red-50' 
                               : 'text-green-600 hover:bg-green-50'
@@ -552,17 +565,17 @@ const UserManagement = () => {
                           disabled={updating[user._id]}
                         >
                           {updating[user._id] ? (
-                            <div className="animate-spin w-4 h-4 border-2 border-current border-t-transparent rounded-full"></div>
+                            <div className={`animate-spin border-2 border-current border-t-transparent rounded-full ${isMobile ? 'w-3 h-3' : 'w-4 h-4'}`}></div>
                           ) : (
-                            user.isActive ? <FaUserTimes /> : <FaUserCheck />
+                            user.isActive ? <FaUserTimes className={isMobile ? 'text-sm' : ''} /> : <FaUserCheck className={isMobile ? 'text-sm' : ''} />
                           )}
                         </button>
                         <button 
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          className={`${isMobile ? 'p-1' : 'p-2'} text-red-600 hover:bg-red-50 rounded-lg transition-colors`}
                           title="Delete User"
                           onClick={() => deleteUser(user._id, user.name)}
                         >
-                          <FaTrash />
+                          <FaTrash className={isMobile ? 'text-sm' : ''} />
                         </button>
                       </div>
                     </td>
@@ -652,30 +665,30 @@ const UserManagement = () => {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-300">{formatDate(user.requestedAt)}</div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-center">
-                          <div className="flex items-center justify-center gap-2">
+                        <td className={`${isMobile ? 'px-3 py-2' : 'px-6 py-4'} whitespace-nowrap text-center`}>
+                          <div className={`flex items-center justify-center ${isMobile ? 'gap-1' : 'gap-2'}`}>
                             <button
                               onClick={() => approveUser(user._id)}
                               disabled={updating[user._id]}
-                              className="bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                              className={`bg-green-600 text-white ${isMobile ? 'px-2 py-1 text-xs' : 'px-3 py-1 text-sm'} rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
                               title="Approve registration"
                             >
                               {updating[user._id] === 'approving' ? (
-                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                <div className={`animate-spin rounded-full border-b-2 border-white ${isMobile ? 'h-3 w-3' : 'h-4 w-4'}`}></div>
                               ) : (
-                                <FaUserCheck />
+                                <FaUserCheck className={isMobile ? 'text-xs' : ''} />
                               )}
                             </button>
                             <button
                               onClick={() => handleRejectWithReason(user._id)}
                               disabled={updating[user._id]}
-                              className="bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                              className={`bg-red-600 text-white ${isMobile ? 'px-2 py-1 text-xs' : 'px-3 py-1 text-sm'} rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
                               title="Reject registration"
                             >
                               {updating[user._id] === 'rejecting' ? (
-                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                <div className={`animate-spin rounded-full border-b-2 border-white ${isMobile ? 'h-3 w-3' : 'h-4 w-4'}`}></div>
                               ) : (
-                                <FaUserTimes />
+                                <FaUserTimes className={isMobile ? 'text-xs' : ''} />
                               )}
                             </button>
                           </div>
