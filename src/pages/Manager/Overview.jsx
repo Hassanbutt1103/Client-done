@@ -127,7 +127,24 @@ const Overview = () => {
     const departmentCounts = {};
     
     usersData.forEach(user => {
-      const dept = user.department || user.role || 'Other';
+      // Prioritize department over role, only use role if department is not available
+      let dept = 'Other';
+      if (user.department && user.department.trim()) {
+        dept = user.department;
+      } else if (user.role) {
+        // Map roles to more readable department names
+        const roleToDept = {
+          'admin': 'Administração',
+          'manager': 'Gerência',
+          'financial': 'Financeiro',
+          'engineering': 'Engenharia',
+          'hr': 'Recursos Humanos',
+          'commercial': 'Comercial',
+          'purchasing': 'Compras'
+        };
+        dept = roleToDept[user.role] || user.role;
+      }
+      
       departmentCounts[dept] = (departmentCounts[dept] || 0) + 1;
     });
 
