@@ -64,7 +64,7 @@ const PieChart = ({ data }) => {
         fill="white" 
         textAnchor={x > cx ? 'start' : 'end'} 
         dominantBaseline="central"
-        fontSize={isMobile ? "10" : "12"}
+        fontSize={isMobile ? "8" : "10"}
         fontWeight="600"
       >
         {`${(percent * 100).toFixed(0)}%`}
@@ -73,7 +73,7 @@ const PieChart = ({ data }) => {
   };
 
   return (
-    <div className="w-full h-full min-h-[280px] max-h-[500px]">
+    <div className="w-full h-full min-h-[200px] max-h-[400px]">
       {chartData.length > 0 ? (
         <ResponsiveContainer width="100%" height="100%">
           <RePieChart>
@@ -83,8 +83,8 @@ const PieChart = ({ data }) => {
               nameKey="name"
               cx="50%"
               cy="50%"
-              outerRadius={isMobile ? 80 : 120}
-              innerRadius={isMobile ? 40 : 60}
+              outerRadius={isMobile ? 60 : 90}
+              innerRadius={isMobile ? 30 : 45}
               fill={COLORS.primary}
               stroke="#1e293b"
               strokeWidth={2}
@@ -102,7 +102,7 @@ const PieChart = ({ data }) => {
             <Legend 
               wrapperStyle={{ 
                 color: '#e2e8f0',
-                fontSize: isMobile ? '10px' : '12px',
+                fontSize: isMobile ? '8px' : '10px',
                 fontWeight: '500'
               }}
               formatter={(value) => (
