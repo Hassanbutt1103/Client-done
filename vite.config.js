@@ -28,32 +28,7 @@ export default defineConfig({
             if (id.includes('react-icons')) {
               return 'icon-vendor';
             }
-            if (id.includes('socket.io')) {
-              return 'socket-vendor';
-            }
             return 'vendor';
-          }
-          // Route-based chunks
-          if (id.includes('/pages/Admin/')) {
-            return 'admin';
-          }
-          if (id.includes('/pages/Manager/')) {
-            return 'manager';
-          }
-          if (id.includes('/pages/Financial/') || id.includes('/pages/AccessFoeEach/Financial')) {
-            return 'financial';
-          }
-          if (id.includes('/pages/Engineering/') || id.includes('/pages/AccessFoeEach/Engineering')) {
-            return 'engineering';
-          }
-          if (id.includes('/pages/Commercial/') || id.includes('/pages/AccessFoeEach/Commercial')) {
-            return 'commercial';
-          }
-          if (id.includes('/pages/Purchasing/')) {
-            return 'purchasing';
-          }
-          if (id.includes('/pages/HR/')) {
-            return 'hr';
           }
         }
       }
