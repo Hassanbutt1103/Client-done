@@ -1,8 +1,20 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
 const Budget = ({ data }) => {
+  const [isMobile, setIsMobile] = useState(false);
   const chartData = Array.isArray(data) && data.length > 0 ? data : [];
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
   const COLORS = {
     revenue: '#10b981',
     expenses: '#ef4444',
@@ -48,7 +60,7 @@ const Budget = ({ data }) => {
         fill="white" 
         textAnchor={x > cx ? 'start' : 'end'} 
         dominantBaseline="central"
-        fontSize="12"
+        fontSize={isMobile ? "10" : "12"}
         fontWeight="600"
       >
         {`${(percent * 100).toFixed(0)}%`}
@@ -59,14 +71,14 @@ const Budget = ({ data }) => {
   return (
     <div className="w-full h-full">
       {chartData.length > 0 ? (
-        <ResponsiveContainer width="100%" height={350}>
+        <ResponsiveContainer width="100%" height={isMobile ? 280 : 350}>
           <PieChart>
             <Pie
               data={chartData}
               cx="50%"
               cy="50%"
-              innerRadius={60}
-              outerRadius={120}
+              innerRadius={isMobile ? 40 : 60}
+              outerRadius={isMobile ? 80 : 120}
               fill="#8884d8"
               dataKey="value"
               stroke="#1e293b"
@@ -86,16 +98,16 @@ const Budget = ({ data }) => {
             <Legend 
               wrapperStyle={{ 
                 color: '#e2e8f0',
-                fontSize: '12px',
+                fontSize: isMobile ? '10px' : '12px',
                 fontWeight: '500'
               }}
               formatter={(value) => (
                 <span style={{ color: '#e2e8f0' }}>{value}</span>
               )}
               iconType="circle"
-              layout="vertical"
-              verticalAlign="middle"
-              align="right"
+              layout={isMobile ? "horizontal" : "vertical"}
+              verticalAlign={isMobile ? "bottom" : "middle"}
+              align={isMobile ? "center" : "right"}
             />
           </PieChart>
         </ResponsiveContainer>

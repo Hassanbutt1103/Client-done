@@ -1,10 +1,23 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FaCloudUploadAlt, FaChartLine, FaChartBar, FaChartPie, FaTable, FaDownload, FaTrash, FaArrowDown, FaArrowUp } from 'react-icons/fa';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ScatterChart, Scatter, AreaChart, Area } from 'recharts';
 import { handleAuthError, getAuthHeaders, isAuthenticated } from '../../utils/auth';
 import { API_ENDPOINTS } from '../../config/api';
 
 const SystemAnalytics = () => {
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
+  
   console.log('🎯 === SystemAnalytics Component Initialized ===');
   console.log('🔧 API Endpoints:', API_ENDPOINTS);
   console.log('🔑 Authentication status:', isAuthenticated());
@@ -706,81 +719,81 @@ const SystemAnalytics = () => {
         {/* Data Table Preview */}
         {csvData.length > 0 && (
           <div className="bg-[#232b3a] rounded-xl shadow-lg p-6 border border-white/10">
-            <div className="flex items-center justify-between mb-4">
+            <div className={`${isMobile ? 'flex-col gap-4' : 'flex items-center justify-between'} mb-4`}>
               <h2 className="text-lg font-semibold text-white flex items-center gap-2">
                 <FaTable className="text-purple-400" />
                 Data Preview
               </h2>
-              <div className="flex items-center gap-4">
-                <div className="flex gap-2">
+              <div className={`${isMobile ? 'flex-col gap-3' : 'flex items-center gap-4'}`}>
+                <div className={`flex ${isMobile ? 'flex-wrap gap-2' : 'gap-2'}`}>
                   <button
                     onClick={scrollToTop}
-                    className="flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-[#D6A647] to-[#b45309] text-white text-sm rounded-lg hover:from-[#b45309] hover:to-[#92400e] transition-colors"
+                    className={`flex items-center gap-1 ${isMobile ? 'px-2 py-1 text-xs' : 'px-3 py-1 text-sm'} bg-gradient-to-r from-[#D6A647] to-[#b45309] text-white rounded-lg hover:from-[#b45309] hover:to-[#92400e] transition-colors`}
                     title="Scroll to top"
                   >
-                    <FaArrowUp className="text-xs" />
-                    Top
+                    <FaArrowUp className={isMobile ? "text-xs" : "text-xs"} />
+                    {isMobile ? "Top" : "Top"}
                   </button>
                   <button
                     onClick={scrollToBottom}
-                    className="flex items-center gap-1 px-3 py-1 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
+                    className={`flex items-center gap-1 ${isMobile ? 'px-2 py-1 text-xs' : 'px-3 py-1 text-sm'} bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors`}
                     title="Scroll to bottom"
                   >
-                    <FaArrowDown className="text-xs" />
-                    Bottom
+                    <FaArrowDown className={isMobile ? "text-xs" : "text-xs"} />
+                    {isMobile ? "Bottom" : "Bottom"}
                   </button>
                   <button
                     onClick={cleanupDuplicates}
                     disabled={cleanupLoading}
-                    className="flex items-center gap-1 px-3 py-1 bg-orange-600 text-white text-sm rounded-lg hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className={`flex items-center gap-1 ${isMobile ? 'px-2 py-1 text-xs' : 'px-3 py-1 text-sm'} bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors`}
                     title="Remove duplicate dates - each date will appear only once"
                   >
                     {cleanupLoading ? (
                       <>
                         <div className="animate-spin w-3 h-3 border border-white border-t-transparent rounded-full"></div>
-                        Cleaning...
+                        {isMobile ? "Cleaning..." : "Cleaning..."}
                       </>
                     ) : (
                       <>
-                        <FaTrash className="text-xs" />
-                        Fix Duplicates
+                        <FaTrash className={isMobile ? "text-xs" : "text-xs"} />
+                        {isMobile ? "Fix" : "Fix Duplicates"}
                       </>
                     )}
                   </button>
                 </div>
-                <div className="text-sm text-gray-400">
+                <div className={`${isMobile ? 'text-xs' : 'text-sm'} text-gray-400 text-center`}>
                   Showing all {csvData.length} rows
                 </div>
               </div>
             </div>
             
             <div className="overflow-auto max-h-96 border border-white/10 rounded-lg" ref={tableRef}>
-              <table className="w-full text-sm">
+              <table className={`w-full ${isMobile ? 'text-xs' : 'text-sm'}`}>
                 <thead className="bg-white/5 sticky top-0">
                   <tr>
-                    <th className="px-4 py-3 text-left text-gray-300 border-b border-white/10">Date</th>
-                    <th className="px-4 py-3 text-right text-gray-300 border-b border-white/10">RECEBER VP</th>
-                    <th className="px-4 py-3 text-right text-gray-300 border-b border-white/10">PAGAR VP</th>
-                    <th className="px-4 py-3 text-right text-gray-300 border-b border-white/10">RECEBER TGN</th>
-                    <th className="px-4 py-3 text-right text-gray-300 border-b border-white/10">PAGAR TGN</th>
-                    <th className="px-4 py-3 text-right text-gray-300 border-b border-white/10">TOTAL RECEBER</th>
-                    <th className="px-4 py-3 text-right text-gray-300 border-b border-white/10">TOTAL A PAGAR</th>
-                    <th className="px-4 py-3 text-right text-gray-300 border-b border-white/10">SALDO DIÁRIO</th>
-                    <th className="px-4 py-3 text-right text-gray-300 border-b border-white/10">SALDO ACUMULADO</th>
+                    <th className={`${isMobile ? 'px-2 py-2' : 'px-4 py-3'} text-left text-gray-300 border-b border-white/10`}>Date</th>
+                    <th className={`${isMobile ? 'px-2 py-2' : 'px-4 py-3'} text-right text-gray-300 border-b border-white/10`}>RECEBER VP</th>
+                    <th className={`${isMobile ? 'px-2 py-2' : 'px-4 py-3'} text-right text-gray-300 border-b border-white/10`}>PAGAR VP</th>
+                    <th className={`${isMobile ? 'px-2 py-2' : 'px-4 py-3'} text-right text-gray-300 border-b border-white/10`}>RECEBER TGN</th>
+                    <th className={`${isMobile ? 'px-2 py-2' : 'px-4 py-3'} text-right text-gray-300 border-b border-white/10`}>PAGAR TGN</th>
+                    <th className={`${isMobile ? 'px-2 py-2' : 'px-4 py-3'} text-right text-gray-300 border-b border-white/10`}>TOTAL RECEBER</th>
+                    <th className={`${isMobile ? 'px-2 py-2' : 'px-4 py-3'} text-right text-gray-300 border-b border-white/10`}>TOTAL A PAGAR</th>
+                    <th className={`${isMobile ? 'px-2 py-2' : 'px-4 py-3'} text-right text-gray-300 border-b border-white/10`}>SALDO DIÁRIO</th>
+                    <th className={`${isMobile ? 'px-2 py-2' : 'px-4 py-3'} text-right text-gray-300 border-b border-white/10`}>SALDO ACUMULADO</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/10">
                   {csvData.map((row, index) => (
                     <tr key={index} className="hover:bg-white/5 text-white">
-                      <td className="px-4 py-2">{row.DATA}</td>
-                      <td className="px-4 py-2 text-right">R$ {Number(row.RECEBER_VP).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-                      <td className="px-4 py-2 text-right">R$ {Number(row.PAGAR_VP).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-                      <td className="px-4 py-2 text-right">R$ {Number(row.RECEBER_TGN).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-                      <td className="px-4 py-2 text-right">R$ {Number(row.PAGAR_TGN).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-                      <td className="px-4 py-2 text-right">R$ {Number(row.TOTAL_RECEBER).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-                      <td className="px-4 py-2 text-right">R$ {Number(row.TOTAL_A_PAGAR).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-                      <td className="px-4 py-2 text-right">R$ {Number(row.SALDO_DIARIO).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-                      <td className="px-4 py-2 text-right">R$ {Number(row.SALDO_ACUMULADO).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                      <td className={`${isMobile ? 'px-2 py-1' : 'px-4 py-2'}`}>{row.DATA}</td>
+                      <td className={`${isMobile ? 'px-2 py-1' : 'px-4 py-2'} text-right`}>R$ {Number(row.RECEBER_VP).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                      <td className={`${isMobile ? 'px-2 py-1' : 'px-4 py-2'} text-right`}>R$ {Number(row.PAGAR_VP).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                      <td className={`${isMobile ? 'px-2 py-1' : 'px-4 py-2'} text-right`}>R$ {Number(row.RECEBER_TGN).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                      <td className={`${isMobile ? 'px-2 py-1' : 'px-4 py-2'} text-right`}>R$ {Number(row.PAGAR_TGN).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                      <td className={`${isMobile ? 'px-2 py-1' : 'px-4 py-2'} text-right`}>R$ {Number(row.TOTAL_RECEBER).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                      <td className={`${isMobile ? 'px-2 py-1' : 'px-4 py-2'} text-right`}>R$ {Number(row.TOTAL_A_PAGAR).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                      <td className={`${isMobile ? 'px-2 py-1' : 'px-4 py-2'} text-right`}>R$ {Number(row.SALDO_DIARIO).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                      <td className={`${isMobile ? 'px-2 py-1' : 'px-4 py-2'} text-right`}>R$ {Number(row.SALDO_ACUMULADO).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
                     </tr>
                   ))}
                 </tbody>
