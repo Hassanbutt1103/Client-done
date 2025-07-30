@@ -159,7 +159,7 @@ const Sidebar = ({ collapsed, setCollapsed, mobileSidebarOpen, setMobileSidebarO
         &times;
       </button>
       
-      <div className="min-h-screen h-full w-full flex flex-col items-start">
+      <div className="min-h-screen h-full w-full flex flex-col items-start overflow-hidden">
         <div className="flex items-center border-b border-white/10 p-6 pb-2 gap-3 w-full min-w-0">
           <img 
             src={novaLogo} 
@@ -186,8 +186,28 @@ const Sidebar = ({ collapsed, setCollapsed, mobileSidebarOpen, setMobileSidebarO
           </div>
         </div>
 
-        <nav className="flex-1 mt-4 space-y-1 w-full">
+        <nav className="flex-1 mt-4 space-y-1 w-full overflow-y-auto">
           {adminNavLinks.map(link => (
+            <NavLink
+              key={link.name}
+              to={link.path}
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-5 py-3 mx-2 rounded-xl transition-colors hover:bg-white/10 focus:bg-white/10 ${isActive ? 'bg-gradient-to-r from-[#D6A647]/20 to-[#D6A647]/40 border border-[#D6A647]/30' : ''}`
+              }
+              onClick={() => setMobileSidebarOpen(false)}
+            >
+              {link.icon}
+              <span className="font-medium tracking-wide text-white block text-left">{link.name}</span>
+            </NavLink>
+          ))}
+          
+          {/* Admin Management Section - Mobile */}
+          <div className="mx-4 my-4">
+            <hr className="border-white/20" />
+            <p className="text-xs text-white/60 mt-2 px-2">Admin Management</p>
+          </div>
+          
+          {adminManagementLinks.map(link => (
             <NavLink
               key={link.name}
               to={link.path}
