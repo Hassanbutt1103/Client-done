@@ -253,12 +253,60 @@ const Overview = () => {
     };
   };
 
+  const getLatestUserDetails = () => {
+    if (!filteredUsers.length) return null;
+    
+    const usersWithDates = filteredUsers.filter(u => u.createdAt);
+    if (!usersWithDates.length) return null;
+    
+    // Filter out invalid dates (future dates or invalid dates)
+    const currentDate = new Date();
+    const validUsers = usersWithDates.filter(user => {
+      const userDate = new Date(user.createdAt);
+      return userDate <= currentDate && !isNaN(userDate.getTime());
+    });
+    
+    if (!validUsers.length) return null;
+    
+    // Find the most recent valid user
+    const latest = validUsers.reduce((a, b) => {
+      const dateA = new Date(a.createdAt);
+      const dateB = new Date(b.createdAt);
+      return dateA > dateB ? a : b;
+    });
+    
+    return latest;
+  };
+
   const getLatestUserMonth = () => {
     if (!filteredUsers.length) return { month: getCurrentMonth(), year: new Date().getFullYear() };
+    
     const usersWithDates = filteredUsers.filter(u => u.createdAt);
     if (!usersWithDates.length) return { month: getCurrentMonth(), year: new Date().getFullYear() };
-    const latest = usersWithDates.reduce((a, b) => new Date(a.createdAt) > new Date(b.createdAt) ? a : b);
+    
+    // Filter out invalid dates (future dates or invalid dates)
+    const currentDate = new Date();
+    const validUsers = usersWithDates.filter(user => {
+      const userDate = new Date(user.createdAt);
+      return userDate <= currentDate && !isNaN(userDate.getTime());
+    });
+    
+    if (!validUsers.length) return { month: getCurrentMonth(), year: new Date().getFullYear() };
+    
+    // Find the most recent valid user
+    const latest = validUsers.reduce((a, b) => {
+      const dateA = new Date(a.createdAt);
+      const dateB = new Date(b.createdAt);
+      return dateA > dateB ? a : b;
+    });
+    
     const date = new Date(latest.createdAt);
+    
+    // Additional validation to ensure the date is reasonable
+    if (date > currentDate || isNaN(date.getTime())) {
+      return { month: getCurrentMonth(), year: new Date().getFullYear() };
+    }
+    
     return {
       month: date.toLocaleString('default', { month: 'short' }),
       year: date.getFullYear()
@@ -365,13 +413,19 @@ const Overview = () => {
 
         <div className="flex-1 bg-[#232b3a] rounded-xl shadow-lg p-4 md:p-6 border border-white/10 text-white">
           <h3 className="text-base md:text-lg font-semibold mb-2">
-            {selectedMonth ? 'Latest User' : 'Current Month'}
+            {selectedMonth ? 'Latest User' : 'Latest User'}
           </h3>
           {(() => {
             const latest = getLatestUserMonth();
+            const latestUser = getLatestUserDetails();
             return <>
               <p className="text-xl md:text-2xl font-bold text-[#f59e42]">{latest.month}</p>
               <p className="text-xs md:text-sm text-gray-400">{latest.year}</p>
+              {latestUser && (
+                <p className="text-xs text-gray-400 mt-1">
+                  {latestUser.name} • {new Date(latestUser.createdAt).toLocaleDateString()}
+                </p>
+              )}
             </>;
           })()}
         </div>
