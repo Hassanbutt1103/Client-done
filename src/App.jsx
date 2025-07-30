@@ -1,39 +1,34 @@
-import React, { Suspense, lazy } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 
-// Lazy load all components
-const Login = lazy(() => import('./pages/Login'));
-const Signup = lazy(() => import('./pages/Signup'));
-const Layout = lazy(() => import('./pages/AccessFoeEach/Layout'));
-const Overview = lazy(() => import('./pages/AccessFoeEach/Overview'));
-const Financial = lazy(() => import('./pages/AccessFoeEach/Financial'));
-const Accounting = lazy(() => import('./pages/AccessFoeEach/Accounting'));
-const Engineering = lazy(() => import('./pages/AccessFoeEach/Engineering'));
-const Commercial = lazy(() => import('./pages/AccessFoeEach/Commercial'));
-const HRDashboard = lazy(() => import('./pages/HR/Dashboard'));
-const ManagerDashboard = lazy(() => import('./pages/Manager/Dashboard'));
-const SectorDashboard = lazy(() => import('./pages/AccessFoeEach/Dashboard'));
-const AdminDashboard = lazy(() => import('./pages/Admin/Dashboard'));
-const UserManagement = lazy(() => import('./pages/Admin/UserManagement'));
-const SystemAnalytics = lazy(() => import('./pages/Admin/SystemAnalytics'));
-const RoleManagement = lazy(() => import('./pages/Admin/RoleManagement'));
-const SystemSettings = lazy(() => import('./pages/Admin/SystemSettings'));
-const DatabaseAdmin = lazy(() => import('./pages/Admin/DatabaseAdmin'));
-const FinancialDashboard = lazy(() => import('./pages/Financial/Dashboard'));
-const EngineeringDashboard = lazy(() => import('./pages/Engineering/Dashboard'));
-const CommercialDashboard = lazy(() => import('./pages/Commercial/Dashboard'));
-const PurchasingDashboard = lazy(() => import('./pages/Purchasing/Dashboard'));
-const PurchasingOverview = lazy(() => import('./pages/Purchasing/Overview'));
-const PurchasingInventory = lazy(() => import('./pages/Purchasing/InventoryManagement'));
-const PurchasingSuppliers = lazy(() => import('./pages/Purchasing/SupplierRelations'));
-const PurchasingOrders = lazy(() => import('./pages/Purchasing/PurchaseOrders'));
+// Import main components directly
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import Layout from './pages/AccessFoeEach/Layout';
+import Overview from './pages/AccessFoeEach/Overview';
+import Financial from './pages/AccessFoeEach/Financial';
+import Accounting from './pages/AccessFoeEach/Accounting';
+import Engineering from './pages/AccessFoeEach/Engineering';
+import Commercial from './pages/AccessFoeEach/Commercial';
+import HRDashboard from './pages/HR/Dashboard';
+import ManagerDashboard from './pages/Manager/Dashboard';
+import SectorDashboard from './pages/AccessFoeEach/Dashboard';
+import AdminDashboard from './pages/Admin/Dashboard';
+import UserManagement from './pages/Admin/UserManagement';
+import SystemAnalytics from './pages/Admin/SystemAnalytics';
+import RoleManagement from './pages/Admin/RoleManagement';
+import SystemSettings from './pages/Admin/SystemSettings';
+import DatabaseAdmin from './pages/Admin/DatabaseAdmin';
+import FinancialDashboard from './pages/Financial/Dashboard';
+import EngineeringDashboard from './pages/Engineering/Dashboard';
+import CommercialDashboard from './pages/Commercial/Dashboard';
+import PurchasingDashboard from './pages/Purchasing/Dashboard';
+import PurchasingOverview from './pages/Purchasing/Overview';
+import PurchasingInventory from './pages/Purchasing/InventoryManagement';
+import PurchasingSuppliers from './pages/Purchasing/SupplierRelations';
+import PurchasingOrders from './pages/Purchasing/PurchaseOrders';
 
-// Loading component
-const LoadingSpinner = () => (
-  <div className="flex items-center justify-center min-h-screen">
-    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-  </div>
-);
+
 
 function RequireAuth({ children, role }) {
   const location = useLocation();
@@ -61,8 +56,7 @@ const App = () => {
   return (
     <Router>
       <LocationLogger />
-      <Suspense fallback={<LoadingSpinner />}>
-        <Routes>
+      <Routes>
           {/* Login page - shows first */}
           <Route path="/" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
@@ -147,7 +141,6 @@ const App = () => {
           {/* Redirect any unknown route to login */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </Suspense>
     </Router>
   );
 };
