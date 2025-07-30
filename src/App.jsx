@@ -37,35 +37,23 @@ const LoadingSpinner = () => (
 
 function RequireAuth({ children, role }) {
   const location = useLocation();
+  const user = JSON.parse(localStorage.getItem('user'));
   
-  try {
-    const userStr = localStorage.getItem('user');
-    const user = userStr ? JSON.parse(userStr) : null;
-    
-    if (!user) {
-      return <Navigate to="/" state={{ from: location }} replace />;
-    }
-    
-    if (role && user.role && user.role.toLowerCase() !== role) {
-      return <Navigate to={`/${user.role.toLowerCase()}`} replace />;
-    }
-    
-    return children;
-  } catch (error) {
-    console.error('Error in RequireAuth:', error);
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    return <Navigate to="/" replace />;
+  if (!user) {
+    return <Navigate to="/" state={{ from: location }} replace />;
   }
+  
+  if (role && user.role.toLowerCase() !== role) {
+    // Redirect to the user's own dashboard
+    return <Navigate to={`/${user.role.toLowerCase()}`} replace />;
+  }
+  
+  return children;
 }
 
 function LocationLogger() {
   const location = useLocation();
-  
-  React.useEffect(() => {
-    console.log('App rendered. Current pathname:', location.pathname);
-  }, [location.pathname]);
-  
+  console.log('App rendered. Current pathname:', location.pathname);
   return null;
 }
 
