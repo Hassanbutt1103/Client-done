@@ -27,6 +27,7 @@ import PurchasingOverview from './pages/Purchasing/Overview';
 import PurchasingInventory from './pages/Purchasing/InventoryManagement';
 import PurchasingSuppliers from './pages/Purchasing/SupplierRelations';
 import PurchasingOrders from './pages/Purchasing/PurchaseOrders';
+import TeamManagement from './pages/Manager/TeamManagement';
 
 
 
@@ -86,7 +87,7 @@ const App = () => {
             <Route path="engineering" element={<Engineering />} />
             <Route path="commercial" element={<Commercial />} />
             <Route path="hr" element={<div className="p-8 bg-gray-50 min-h-screen"><h1 className="text-2xl font-bold">HR Dashboard - Coming Soon</h1></div>} />
-            <Route path="team" element={<div className="p-8 bg-gray-50 min-h-screen"><h1 className="text-2xl font-bold">Team Management - Coming Soon</h1></div>} />
+            <Route path="team" element={<TeamManagement />} />
           </Route>
           
           {/* HR Routes */}
