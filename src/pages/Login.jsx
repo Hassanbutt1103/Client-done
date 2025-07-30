@@ -38,6 +38,8 @@ const Login = () => {
     try {
       console.log('🔗 Attempting login to:', API_ENDPOINTS.AUTH.LOGIN);
       console.log('📤 Login data:', { email: username, userType });
+      console.log('🌐 Current origin:', window.location.origin);
+      console.log('🔧 API Base URL:', API_ENDPOINTS.BASE);
       
       const response = await fetch(API_ENDPOINTS.AUTH.LOGIN, {
         method: 'POST',
@@ -88,7 +90,15 @@ const Login = () => {
       }
     } catch (err) {
       console.error('Login error:', err);
-      setError('Server error. Please try again later.');
+      
+      // Check for specific error types
+      if (err.name === 'TypeError' && err.message.includes('fetch')) {
+        setError('Network error: Unable to connect to server. Please check your internet connection and try again.');
+      } else if (err.message && err.message.includes('CORS')) {
+        setError('CORS error: Server is blocking requests from this domain. Please contact administrator.');
+      } else {
+        setError('Server error. Please try again later.');
+      }
     } finally {
       setIsLoading(false);
     }

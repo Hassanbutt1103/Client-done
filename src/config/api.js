@@ -1,7 +1,22 @@
 // API Configuration
-// Use environment variable if available, otherwise default to production server
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+// Automatically detect environment and use appropriate backend URL
+const getApiBaseUrl = () => {
+  // If environment variable is set, use it
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL;
+  }
+  
+  // If running in development (localhost), use local backend
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    return 'http://localhost:3001';
+  }
+  
+  // For production (deployed on Vercel), use your backend URL
+  // Replace this with your actual backend URL (Render, Railway, etc.)
+  return 'https://client-done-backend.onrender.com';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 export const API_ENDPOINTS = {
   // Base URL
