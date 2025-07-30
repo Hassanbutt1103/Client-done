@@ -1,50 +1,47 @@
+// vite.config.js
+
+// Vite ke liye core config import
 import { defineConfig } from 'vite'
+
+// React support plugin
 import react from '@vitejs/plugin-react'
+
+// Tailwind CSS support
 import tailwindcss from '@tailwindcss/vite'
 
-// https://vite.dev/config/
+// Config export
 export default defineConfig({
-  plugins: [react(),
-    tailwindcss(),
+  // Plugins section: React + Tailwind
+  plugins: [
+    react(),
+    tailwindcss()
   ],
+
+  // Dev server config (local development)
   server: {
-    port: 5174
+    port: 5174 // Change as needed
   },
+
+  // Build settings (for production)
   build: {
-    rollupOptions: {
-      output: {
-        manualChunks: (id) => {
-          // Vendor chunks
-          if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
-              return 'react-vendor';
-            }
-            if (id.includes('@mui') || id.includes('@emotion')) {
-              return 'ui-vendor';
-            }
-            if (id.includes('recharts')) {
-              return 'chart-vendor';
-            }
-            if (id.includes('react-icons')) {
-              return 'icon-vendor';
-            }
-            return 'vendor';
-          }
-        }
-      }
-    },
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 1000, // Ignore size warnings
+
+    // Code minification settings
     minify: 'terser',
     terserOptions: {
       compress: {
-        drop_console: true,
-        drop_debugger: true
+        drop_console: true,    // Remove console.log in production
+        drop_debugger: true    // Remove debugger in production
       }
     }
+
+    // ⚠️ NOTE: manualChunks removed to prevent Vercel crash
   },
+
+  // Aliases (if needed, mostly optional for basic React projects)
   resolve: {
     alias: {
-      'react': 'react',
+      react: 'react',
       'react-dom': 'react-dom'
     }
   }
