@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import PieChart from '../../components/general-overview/PieChart';
 import LineChart from '../../components/general-overview/Linechart';
 import MonthSelector from '../../components/MonthSelector';
@@ -17,15 +17,38 @@ const Overview = () => {
   const [selectedMonth, setSelectedMonth] = useState(null);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const isInitialLoad = useRef(true);
+  const lastFetchTime = useRef(0);
+  const fetchTimeoutRef = useRef(null);
+
+  // Debounced fetch function to prevent excessive API calls
+  const debouncedFetch = useCallback((showLoading = true) => {
+    if (fetchTimeoutRef.current) {
+      clearTimeout(fetchTimeoutRef.current);
+    }
+    
+    fetchTimeoutRef.current = setTimeout(() => {
+      fetchRealUsers(showLoading);
+    }, 300); // 300ms debounce
+  }, []);
 
   useEffect(() => {
     fetchRealUsers(); // initial fetch
 
+    // Reduced polling frequency for better performance
     const interval = setInterval(() => {
-      fetchRealUsers(false); // not initial
-    }, 5000); // every 5 seconds
+      const now = Date.now();
+      // Only fetch if more than 10 seconds have passed since last fetch
+      if (now - lastFetchTime.current > 10000) {
+        fetchRealUsers(false); // not initial
+      }
+    }, 10000); // every 10 seconds instead of 5
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      if (fetchTimeoutRef.current) {
+        clearTimeout(fetchTimeoutRef.current);
+      }
+    };
   }, []);
 
   // Filter users when selectedMonth changes
@@ -93,12 +116,14 @@ const Overview = () => {
           if (data.status === 'success') {
             const newSorted = sortUsers(data.users);
             const oldSorted = sortUsers(users);
+            // Only update if data has actually changed
             if (JSON.stringify(newSorted) !== JSON.stringify(oldSorted)) {
               setUsers(data.users);
               setFilteredUsers(data.users);
               calculateDepartmentStats(data.users);
               setMonthlyActivity(calculateMonthlyActivity(data.users));
             }
+            lastFetchTime.current = Date.now();
           }
         }
       } else {
