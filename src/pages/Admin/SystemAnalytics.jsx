@@ -35,7 +35,9 @@ const SystemAnalytics = () => {
   const [dataFields, setDataFields] = useState([]);
   const tableRef = useRef(null);
   const [cleanupLoading, setCleanupLoading] = useState(false);
-  
+  const [deletingRows, setDeletingRows] = useState(new Set());
+  const [bulkDeleteLoading, setBulkDeleteLoading] = useState(false);
+
   console.log('📊 Initial state set:');
   console.log('   - csvData: empty array');
   console.log('   - loading: false');
@@ -535,6 +537,108 @@ const SystemAnalytics = () => {
     }
   };
 
+  const handleDeleteAll = async () => {
+    const confirmMessage = `Are you sure you want to delete ALL ${csvData.length} records?\n\nThis action cannot be undone and will remove all CSV data from the database.\n\nThis will affect:\n• Financial Dashboard data\n• Analytics charts\n• All uploaded CSV records`;
+    
+    if (!confirm(confirmMessage)) {
+      return;
+    }
+
+    setBulkDeleteLoading(true);
+
+    try {
+      console.log('🗑️ Deleting all records...');
+      
+      // Delete all records one by one (since we don't have a bulk delete endpoint)
+      const deletePromises = csvData.map(async (row, index) => {
+        try {
+          const response = await fetch(API_ENDPOINTS.CLIENT_DATA.DELETE(row._id), {
+            method: 'DELETE',
+            headers: getAuthHeaders()
+          });
+          
+          if (response.ok) {
+            console.log(`✅ Deleted record ${index + 1}/${csvData.length}`);
+            return true;
+          } else {
+            console.log(`❌ Failed to delete record ${index + 1}`);
+            return false;
+          }
+        } catch (error) {
+          console.error(`❌ Error deleting record ${index + 1}:`, error);
+          return false;
+        }
+      });
+
+      const results = await Promise.all(deletePromises);
+      const successCount = results.filter(Boolean).length;
+      const failCount = results.length - successCount;
+
+      if (successCount > 0) {
+        setMessage(`✅ Successfully deleted ${successCount} records${failCount > 0 ? ` (${failCount} failed)` : ''}`);
+        setCsvData([]); // Clear the table
+        
+        // Refresh data after a short delay
+        setTimeout(() => {
+          fetchData();
+        }, 1000);
+      } else {
+        setMessage('❌ Failed to delete any records');
+      }
+    } catch (error) {
+      console.error('❌ Bulk delete error:', error);
+      setMessage(`❌ Bulk delete error: ${error.message}`);
+    } finally {
+      setBulkDeleteLoading(false);
+    }
+  };
+
+  const handleDeleteRow = async (recordId, index) => {
+    const recordDate = csvData[index]?.DATA || 'this record';
+    const confirmMessage = `Are you sure you want to delete the record for ${recordDate}?\n\nThis action cannot be undone.`;
+    
+    if (!confirm(confirmMessage)) {
+      return;
+    }
+
+    setDeletingRows(prev => new Set(prev).add(index));
+
+    try {
+      console.log(`🗑️ Deleting record: ${recordId}`);
+      
+      const response = await fetch(API_ENDPOINTS.CLIENT_DATA.DELETE(recordId), {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      });
+
+      if (response.ok) {
+        console.log('✅ Record deleted successfully');
+        setMessage(`✅ Record for ${recordDate} deleted successfully`);
+        
+        // Remove the row from the local state
+        setCsvData(prevData => prevData.filter((_, i) => i !== index));
+        
+        // Refresh data after a short delay
+        setTimeout(() => {
+          fetchData();
+        }, 1000);
+      } else {
+        const errorData = await response.json();
+        console.error('❌ Delete failed:', errorData);
+        setMessage(`❌ Delete failed: ${errorData.message || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('❌ Delete error:', error);
+      setMessage(`❌ Delete error: ${error.message}`);
+    } finally {
+      setDeletingRows(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(index);
+        return newSet;
+      });
+    }
+  };
+
   React.useEffect(() => {
     fetchData();
   }, []);
@@ -760,6 +864,24 @@ const SystemAnalytics = () => {
                       </>
                     )}
                   </button>
+                  <button
+                    onClick={handleDeleteAll}
+                    disabled={bulkDeleteLoading || csvData.length === 0}
+                    className={`flex items-center gap-1 ${isMobile ? 'px-2 py-1 text-xs' : 'px-3 py-1 text-sm'} bg-red-700 text-white rounded-lg hover:bg-red-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors`}
+                    title="Delete all records from database"
+                  >
+                    {bulkDeleteLoading ? (
+                      <>
+                        <div className="animate-spin w-3 h-3 border border-white border-t-transparent rounded-full"></div>
+                        {isMobile ? "Deleting..." : "Deleting All..."}
+                      </>
+                    ) : (
+                      <>
+                        <FaTrash className={isMobile ? "text-xs" : "text-xs"} />
+                        {isMobile ? "Del All" : "Delete All"}
+                      </>
+                    )}
+                  </button>
                 </div>
                 <div className={`${isMobile ? 'text-xs' : 'text-sm'} text-gray-400 text-center`}>
                   Showing all {csvData.length} rows
@@ -780,11 +902,12 @@ const SystemAnalytics = () => {
                     <th className={`${isMobile ? 'px-2 py-2' : 'px-4 py-3'} text-right text-gray-300 border-b border-white/10`}>TOTAL A PAGAR</th>
                     <th className={`${isMobile ? 'px-2 py-2' : 'px-4 py-3'} text-right text-gray-300 border-b border-white/10`}>SALDO DIÁRIO</th>
                     <th className={`${isMobile ? 'px-2 py-2' : 'px-4 py-3'} text-right text-gray-300 border-b border-white/10`}>SALDO ACUMULADO</th>
+                    <th className={`${isMobile ? 'px-2 py-2' : 'px-4 py-3'} text-center text-gray-300 border-b border-white/10`}>Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/10">
                   {csvData.map((row, index) => (
-                    <tr key={index} className="hover:bg-white/5 text-white">
+                    <tr key={index} className={`hover:bg-white/5 text-white ${deletingRows.has(index) ? 'opacity-50' : ''}`}>
                       <td className={`${isMobile ? 'px-2 py-1' : 'px-4 py-2'}`}>{row.DATA}</td>
                       <td className={`${isMobile ? 'px-2 py-1' : 'px-4 py-2'} text-right`}>R$ {Number(row.RECEBER_VP).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
                       <td className={`${isMobile ? 'px-2 py-1' : 'px-4 py-2'} text-right`}>R$ {Number(row.PAGAR_VP).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
@@ -794,6 +917,26 @@ const SystemAnalytics = () => {
                       <td className={`${isMobile ? 'px-2 py-1' : 'px-4 py-2'} text-right`}>R$ {Number(row.TOTAL_A_PAGAR).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
                       <td className={`${isMobile ? 'px-2 py-1' : 'px-4 py-2'} text-right`}>R$ {Number(row.SALDO_DIARIO).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
                       <td className={`${isMobile ? 'px-2 py-1' : 'px-4 py-2'} text-right`}>R$ {Number(row.SALDO_ACUMULADO).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                      <td className={`${isMobile ? 'px-2 py-1' : 'px-4 py-2'} text-center`}>
+                        <button
+                          onClick={() => handleDeleteRow(row._id, index)}
+                          disabled={deletingRows.has(index)}
+                          className={`flex items-center justify-center gap-1 ${isMobile ? 'px-2 py-1 text-xs' : 'px-3 py-1 text-sm'} bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors`}
+                          title="Delete this record"
+                        >
+                          {deletingRows.has(index) ? (
+                            <>
+                              <div className="animate-spin w-3 h-3 border border-white border-t-transparent rounded-full"></div>
+                              {isMobile ? "..." : "Deleting..."}
+                            </>
+                          ) : (
+                            <>
+                              <FaTrash className={isMobile ? "text-xs" : "text-xs"} />
+                              {isMobile ? "Del" : "Delete"}
+                            </>
+                          )}
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -801,7 +944,7 @@ const SystemAnalytics = () => {
             </div>
             
             <div className="mt-4 text-center text-gray-400 text-sm">
-              💡 Use scroll buttons above or mouse wheel to navigate • Click "Bottom" for latest data • Use "Fix Duplicates" to ensure each date appears only once
+              💡 Use scroll buttons above or mouse wheel to navigate • Click "Bottom" for latest data • Use "Fix Duplicates" to ensure each date appears only once • Click "Delete" to remove individual records • Use "Delete All" to remove all data from database
             </div>
           </div>
         )}
